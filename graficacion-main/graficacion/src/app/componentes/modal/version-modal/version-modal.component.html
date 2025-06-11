@@ -1,0 +1,60 @@
+<div class=" ml-6 mt-6 ">
+  <!-- <button class="btn px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" (click)="crearProyecto()">
+    crear
+  </button> -->
+
+<h1 class="ml-6 font-mono">Crear proyecto</h1>
+@for (diagrama of diagramas;  track j; let j = $index ){
+  @if(allVersiones.length > 0){
+    <div class="w-full ml-6 md:w-2/3 px-3 mb-6 md:mb-0">
+      <label class="block uppercase tracking-wide text-gray-700 text-base font-bold mb-2" for="grid-state">
+        {{diagrama}}
+            </label>
+      <div class="relative">
+        <select  [(ngModel)]="versionesSelected[j]" class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-state">
+          <!-- @if( ){ -->
+            @for (version of allVersiones.reverse(); track i; let i = $index){
+
+              <!-- <option value="">hola{{version.id_diagrama}}</option> -->
+              @if(version.id_diagrama == j+1) {
+
+                <option [value]="version.id_version">{{version.version}}</option>
+              }
+
+            }
+            <!-- <option value="0">version 1</option> -->
+
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+        </div>
+      </div>
+    </div>
+
+  }
+
+}
+<br>
+<div>
+  <div class="w-full ml-6 md:w-2/3 px-3 mb-6 md:mb-0">
+      <label class="block uppercase tracking-wide text-gray-700 text-base font-bold mb-2" for="grid-state">Credenciales para BDD</label>
+
+<label class="block uppercase tracking-wide text-gray-700 text-base font-bold mb-2" for="grid-state">Host de la BDD</label>
+<input type="text" [(ngModel)]="bddHost" class="border-2 border-gray-300 rounded-md p-2 mb-4 w-[400px]" placeholder="Host de la base de datos" />
+
+<label class="block uppercase tracking-wide text-gray-700 text-base font-bold mb-2" for="grid-state">Usuario de la BDD</label>
+<input type="text" [(ngModel)]="bddUser" class="border-2 border-gray-300 rounded-md p-2 mb-4 w-[400px]" placeholder="Usuario de la base de datos" />
+
+<label class="block uppercase tracking-wide text-gray-700 text-base font-bold mb-2" for="grid-state">Contraseña de la BDD</label>
+<input type="text" [(ngModel)]="bddPass" class="border-2 border-gray-300 rounded-md p-2 mb-4 w-[400px]" placeholder="Contraseña de la base de datos" />
+
+  </div>
+</div>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+  <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+</div>
+<button class=" ml-6 mt-6 w-[80%] px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" (click)="SubmitVersion()">
+  crear
+</button>
+
+</div>

@@ -1,0 +1,103 @@
+/* === Estilos Mejorados para Casos de Uso === */
+#myDiagramDiv {
+  border: 2px solid #d1d5db;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  width: 100%;
+  height: 75vh;
+}
+
+/* Sidebar - Paleta de elementos */
+.uml-palette-container {
+  width: 250px;
+  /* height: 75vh; */
+  background: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.uml-palette {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Área de diagramas */
+.uml-diagram-container {
+  flex-grow: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Toolbar */
+.toolbar {
+  padding: 15px;
+  border-top: 1px solid #d1d5db;
+  /* background: #e5e7eb; */
+  text-align: center;
+  border-radius: 0 0 12px 12px;
+}
+
+.toolbar button {
+  background-color: #f97316; /* Color primario naranja */
+  color: white;
+  border-radius: 8px;
+  padding: 10px 20px;
+  transition: none; /* Eliminada la transición */
+  cursor: default; /* Cambiado de pointer a default */
+}
+
+/* Barra de herramientas de relaciones */
+.relationship-toolbar {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background-color: #fff7ed; /* Color de fondo claro */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(249, 115, 22, 0.1); /* Sombra naranja */
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.relationship-btn {
+  background-color: white;
+  color: #431407; /* Color de texto oscuro */
+  border: 1px solid #fdba74; /* Borde naranja claro */
+  border-radius: 6px;
+  padding: 8px 15px;
+  transition: none; /* Eliminada la transición */
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 120px;
+  justify-content: center;
+  cursor: default; /* Cambiado de pointer a default */
+}
+
+.relationship-btn.active {
+  background-color: #f97316; /* Naranja primario */
+  color: white;
+  box-shadow: 0 2px 5px rgba(249, 115, 22, 0.3); /* Sombra naranja */
+}
+
+.relationship-btn i {
+  font-size: 14px;
+}
+
+.delete{
+  background-color: #F44336 !important;
+}
+.guardar{
+  background-color: #4CAF50 !important; 
+}

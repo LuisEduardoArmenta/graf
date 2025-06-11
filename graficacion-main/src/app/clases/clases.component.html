@@ -1,0 +1,334 @@
+<div style="display: flex; flex-direction: column; gap: 10px">
+    <!-- Control de versiones -->
+    <div class="version-control">
+      <div class="version-title">
+        <span>Control de Versiones</span>
+      </div>
+      <div class="version-actions">
+        <select 
+          class="form-select version-select" 
+          [(ngModel)]="currentVersionId"
+          (change)="changeVersion($any($event.target).value)">
+          <option *ngFor="let version of versions; let i = index" [value]="version.ID_V">
+            Versión {{ i + 1 }}
+          </option>
+        </select>
+        <button 
+          class="btn version-btn"
+          (click)="createNewVersion()">
+          Nueva Versión
+        </button>
+        <button 
+          class="btn version-btn guardar"
+          (click)="guardarVersion()">
+          Guardar
+        </button>
+        <button 
+          class="btn version-btn delete"
+          (click)="eliminarVersion()">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  <!-- Barra de herramientas de relaciones -->
+  <div class="relationship-toolbar">
+    <button 
+      class="btn relationship-btn" 
+      (click)="connectAssociation()"
+      title="Asociación: Conecta clases con una relación simple">
+      <i class="fas fa-link"></i> Asociación
+    </button>
+    <button 
+      class="btn relationship-btn" 
+      (click)="connectAggregation()"
+      title="Agregación: Relación todo-parte donde las partes pueden existir independientemente">
+      <i class="fas fa-diamond"></i> Agregación
+    </button>
+    <button 
+      class="btn relationship-btn" 
+      (click)="connectComposition()"
+      title="Composición: Relación todo-parte donde las partes no pueden existir sin el todo">
+      <i class="fas fa-cube"></i> Composición
+    </button>
+    <button 
+      class="btn relationship-btn" 
+      (click)="connectGeneralization()"
+      title="Generalización: Relación de herencia entre clases">
+      <i class="fas fa-sitemap"></i> Generalización
+    </button>
+    <button 
+      class="btn relationship-btn" 
+      (click)="connectDependency()"
+      title="Dependencia: Una clase depende de otra">
+      <i class="fas fa-arrow-right"></i> Dependencia
+    </button>
+    <button 
+      class="btn relationship-btn" 
+      (click)="connectRealization()"
+      title="Realización: Implementación de una interfaz">
+      <i class="fas fa-code"></i> Realización
+    </button>
+    <button 
+      class="btn relationship-btn" 
+      (click)="connectAssociationReflexive()"
+      title="Asociación Reflexiva: Una clase se relaciona consigo misma">
+      <i class="fas fa-sync"></i> Asoc. Reflexiva
+    </button>
+  </div>
+
+  <!-- Barra de herramientas de multiplicidad -->
+  <div class="relationship-toolbar multiplicity-toolbar">
+    <button 
+      class="btn multiplicity-btn" 
+      (click)="setMultiplicity('1..1')"
+      title="Exactamente uno">
+      <i class="fas fa-equals"></i> 1..1
+    </button>
+    <button 
+      class="btn multiplicity-btn" 
+      (click)="setMultiplicity('1..*')"
+      title="Uno o muchos">
+      <i class="fas fa-asterisk"></i> 1..*
+    </button>
+    <button 
+      class="btn multiplicity-btn" 
+      (click)="setMultiplicity('0..1')"
+      title="Cero o uno">
+      <i class="fas fa-question"></i> 0..1
+    </button>
+    <button 
+      class="btn multiplicity-btn" 
+      (click)="setMultiplicity('0..*')"
+      title="Cero o muchos">
+      <i class="fas fa-star"></i> 0..*
+    </button>
+    <button 
+      class="btn multiplicity-btn" 
+      (click)="setMultiplicity('N..M')"
+      title="N a M">
+      <i class="fas fa-exchange-alt"></i> N..M
+    </button>
+  </div>
+
+<!-- Modal para edición de clase completa -->
+<div *ngIf="isModalVisible && modalType === 'class'" class="modal-overlay">
+  <div class="modal-compact">
+    <h2>Editar Clase</h2>
+    
+    <!-- Nombre de la clase -->
+    <div class="form-group">
+      <label for="className">Nombre de la clase:</label>
+      <input id="className" type="text" [(ngModel)]="className" class="form-control">
+    </div>
+    
+    <div class="modal-content-scroll">
+      <!-- Sección de atributos con toggle -->
+      <div class="section-header" (click)="toggleSection('attributes')">
+        <span class="section-title">Atributos</span>
+        <span class="toggle-icon">{{ showAttributes ? '▼' : '►' }}</span>
+      </div>
+      
+      <div class="section-content" [ngClass]="{'show': showAttributes}">
+        <div *ngFor="let attr of classAttributes; let i = index" class="attribute-row">
+          <select [(ngModel)]="attr.visibility" [disabled]="attr.isForeignKey">
+            <option value="+">+ (Público)</option>
+            <option value="-">- (Privado)</option>
+            <option value="#"># (Protegido)</option>
+            <option value=" "> (Default)</option>
+          </select>
+          <input type="text" [(ngModel)]="attr.name" placeholder="Nombre" [disabled]="attr.isForeignKey" 
+                 [ngClass]="{'foreign-key': attr.isForeignKey}">
+          <select [(ngModel)]="attr.type" [disabled]="attr.isForeignKey">
+            <option value="string">string</option>
+            <option value="int">int</option>
+            <option value="float">float</option>
+            <option value="double">double</option>
+            <option value="boolean">boolean</option>
+            <option value="date">datetime/timestamp</option>
+            <option value="dateonly">date (Sin hora)</option>
+            <option value="time">time</option>
+          </select>
+          <button (click)="removeClassAttribute(i)" class="eliminar" [disabled]="attr.isForeignKey" 
+                  [title]="attr.isForeignKey ? 'Elimine la relación para quitar este campo' : 'Eliminar atributo'">×</button>
+        </div>
+        <button (click)="addClassAttribute()" class="agregar">Agregar Atributo</button>
+      </div>
+      
+      <!-- Nueva sección para relaciones -->
+      <div *ngIf="linkedRelations.length > 0" class="section-header" (click)="toggleSection('relations')">
+        <span class="section-title">Relaciones</span>
+        <span class="badge relation-badge">{{ linkedRelations.length }}</span>
+        <span class="toggle-icon">{{ showRelations ? '▼' : '►' }}</span>
+      </div>
+      
+      <div *ngIf="linkedRelations.length > 0" class="section-content" [ngClass]="{'show': showRelations}">
+        <div *ngFor="let relation of linkedRelations; let i = index" class="relation-item">
+          <div class="relation-header">
+            <div class="relation-info">
+              <span class="relation-type" [ngClass]="relation.type">
+                {{ getRelationTypeName(relation.type) }}
+              </span>
+              <span class="relation-source">desde <strong>{{ relation.fromClassName }}</strong></span>
+              <span class="relation-multiplicity" *ngIf="relation.multiplicity">
+                ({{ relation.multiplicity }})
+              </span>
+            </div>
+          </div>
+          
+          <div class="relation-content">
+            <!-- Si el campo ya está mapeado -->
+            <div *ngIf="relation.mappedField" class="mapped-field">
+              <div class="field-mapping">
+                <div class="source-field">
+                  <span class="field-label">Campo origen:</span>
+                  <span class="field-value">{{ relation.mappedSourceField }}</span>
+                </div>
+                <div class="arrow">→</div>
+                <div class="target-field">
+                  <span class="field-label">Campo local:</span>
+                  <span class="field-value">{{ relation.mappedField }}</span>
+                </div>
+              </div>
+              <button (click)="removeFieldMapping(relation)" class="btn-remove-mapping">
+                Eliminar mapeo
+              </button>
+            </div>
+            
+            <!-- Si no hay campo mapeado aún -->
+            <div *ngIf="!relation.mappedField" class="field-mapping-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Campo de {{ relation.fromClassName }}:</label>
+                  <select [(ngModel)]="relation.selectedSourceField" class="field-select">
+                    <option value="">-- Seleccionar campo --</option>
+                    <option *ngFor="let field of relation.availableSourceFields" 
+                            [value]="field.name" 
+                            [disabled]="isFieldMappedInAnyRelation(field.name, relation.fromKey)">
+                      {{ field.visibility }} {{ field.name }}: {{ field.type }}
+                    </option>
+                  </select>
+                </div>
+                
+                <div class="arrow-container">→</div>
+                
+                <div class="form-group">
+                  <label>Campo en esta clase:</label>
+                  <div class="target-field-options">
+                    <!-- Radio buttons para elegir entre nuevo campo o existente -->
+                    <div class="field-option">
+                      <input type="radio" [(ngModel)]="relation.fieldMappingType" value="new" id="newField{{i}}" name="fieldType{{i}}">
+                      <label for="newField{{i}}">Nuevo</label>
+                    </div>
+                    <div class="field-option">
+                      <input type="radio" [(ngModel)]="relation.fieldMappingType" value="existing" id="existingField{{i}}" name="fieldType{{i}}">
+                      <label for="existingField{{i}}">Existente</label>
+                    </div>
+                  </div>
+                  
+                  <!-- Campo nuevo -->
+                  <input *ngIf="relation.fieldMappingType === 'new'" 
+                         type="text" 
+                         [(ngModel)]="relation.localFieldName" 
+                         [placeholder]="relation.selectedSourceField || 'nombreCampo'" 
+                         [disabled]="!relation.selectedSourceField">
+                  
+                  <!-- Seleccionar campo existente -->
+                  <select *ngIf="relation.fieldMappingType === 'existing'" 
+                          [(ngModel)]="relation.localFieldName" 
+                          class="field-select"
+                          [disabled]="!relation.selectedSourceField">
+                    <option value="">-- Seleccionar campo existente --</option>
+                    <option *ngFor="let field of classAttributes" 
+                            [value]="field.name"
+                            [disabled]="field.isForeignKey">
+                      {{ field.visibility }} {{ field.name }}: {{ field.type }}
+                      <span *ngIf="field.type !== getSourceFieldType(relation)"> 
+                        (Tipo cambiará a {{ getSourceFieldType(relation) }})
+                      </span>
+                    </option>
+                  </select>
+                </div>
+              </div>
+              
+              <button (click)="createFieldMapping(relation)" class="btn-add-mapping"
+                      [disabled]="!relation.selectedSourceField || !relation.localFieldName">
+                Mapear campo
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sección de métodos con toggle -->
+      <div class="section-header" (click)="toggleSection('methods')">
+        <span class="section-title">Métodos</span>
+        <span class="toggle-icon">{{ showMethods ? '▼' : '►' }}</span>
+      </div>
+      
+      <div class="section-content" [ngClass]="{'show': showMethods}">
+        <div *ngFor="let method of classMethods; let i = index" class="method-container">
+          <div class="method-header" (click)="toggleMethod(i)">
+            <div class="method-info">
+              <select [(ngModel)]="method.visibility" (click)="$event.stopPropagation()">
+                <option value="+">+ (Público)</option>
+                <option value="-">- (Privado)</option>
+                <option value="#"># (Protegido)</option>
+                <option value=" "> (Default)</option>
+              </select>
+              <input type="text" [(ngModel)]="method.name" 
+                    placeholder="Nombre" 
+                    (click)="$event.stopPropagation()">
+              <select [(ngModel)]="method.type" (click)="$event.stopPropagation()">
+                <option value="void">void</option>
+                <option value="string">string</option>
+                <option value="int">int</option>
+                <option value="float">float</option>
+                <option value="double">double</option>
+                <option value="boolean">boolean</option>
+              </select>
+            </div>
+            <div class="method-actions">
+              <span class="toggle-icon">{{ openMethods[i] ? '▼' : '►' }}</span>
+              <button (click)="removeClassMethod(i); $event.stopPropagation()" class="eliminar">×</button>
+            </div>
+          </div>
+          
+          <!-- Parámetros del método (desplegables) -->
+          <div class="method-params" [ngClass]="{'show': openMethods[i]}">
+            <h4>Parámetros</h4>
+            <div *ngFor="let param of method.parameters; let j = index" class="param-row">
+              <input type="text" [(ngModel)]="param.paramName" placeholder="Nombre">
+              <select [(ngModel)]="param.paramType">
+                <option value="string">string</option>
+                <option value="int">int</option>
+                <option value="float">float</option>
+                <option value="double">double</option>
+                <option value="boolean">boolean</option>
+                <option value="date">datetime/timestamp</option>
+                <option value="dateonly">date (Sin hora)</option>
+                <option value="time">time</option>
+                <option value="any">any</option>
+              </select>
+              <button (click)="removeClassMethodParameter(i, j)" class="eliminar">×</button>
+            </div>
+            <button (click)="addClassMethodParameter(i)" class="agregar-param">Agregar Parámetro</button>
+          </div>
+        </div>
+        <button (click)="addClassMethod()" class="agregar">Agregar Método</button>
+      </div>
+    </div>
+    
+    <!-- Botones de acción -->
+    <div class="modal-actions">
+      <button (click)="closeModal()">Cancelar</button>
+      <button (click)="saveModalData()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Contenedor principal -->
+  <div class="contenedor">
+    <div #paletteDiv style="width: 250px; height: 60vh;"></div>
+    <div #diagramDiv style="width: 80%; margin-left: 10px; height: 60vh;"></div>
+  </div>
+</div>

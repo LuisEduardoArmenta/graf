@@ -1,0 +1,250 @@
+<div class="app-container">
+  <div class="main-content">
+    <!-- Barra lateral -->
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <h2>Proyectos UML</h2>
+      </div>
+      
+      <div class="sidebar-content">
+        <ul class="project-list">
+          <li *ngFor="let proyecto of proyectos" 
+              (click)="seleccionarProyecto(proyecto.Nombre,proyecto.ID)"
+              [class.active]="proyecto.Nombre === proyectoSeleccionado">
+            <div class="project-item">
+              <i class="fas fa-folder-open"></i> 
+              <span>{{ proyecto.Nombre }}</span>
+            </div>
+            <div class="acciones">
+              <button class="action-btn edit-btn" (click)="editarProyecto(proyecto, $event)" title="Editar proyecto">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="action-btn delete-btn" (click)="eliminarProyecto(proyecto.ID, $event)" title="Eliminar proyecto">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </li>
+          
+          @if(creandoProyecto){
+            <li class="input-container">
+              <input type="text" [(ngModel)]="nuevoProyecto" (keyup.enter)="agregarProyecto()"
+                placeholder="Nombre del proyecto" (blur)="cancelarNuevoProyecto()" autofocus>
+              <i class="fas fa-times cancel-icon" (click)="cancelarNuevoProyecto()"></i>
+            </li>
+          }@else{
+            <li class="new-project-btn" (click)="activarInput()">
+              <i class="fas fa-plus-circle"></i> 
+              <span>Nuevo Proyecto</span>
+            </li>
+          }
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="content">
+      <div class="header">
+        <div class="header-content">
+          <h1>Creación de Diagramas UML</h1>
+          @if(proyectoSeleccionado){
+            <button class="btn-generar" [disabled]="isButtonDisabled" (click)="abrirModalGenerarCodigo()">
+              Generar Código
+            </button>
+          }
+        </div>
+      </div>
+      
+      <div class="content-body">
+        @if(proyectoSeleccionado){
+          <div class="project-header">
+            <h2>{{proyectoSeleccionado}}</h2>
+            <p>Selecciona un artefacto UML para comenzar a diseñar.</p>
+          </div>
+          
+          <!-- Menú de artefactos UML -->
+          <section class="uml-artifacts">
+            <ul>
+              <li [routerLink]="'/cu'" [class.active]="activeRoute === '/cu'">
+                <span>Casos de Uso</span>
+              </li>
+              <li [routerLink]="'/secuencia'" [class.active]="activeRoute === '/secuencia'">
+                <span>Diagramas de Secuencia</span>
+              </li>
+              <li [routerLink]="'/paquetes'" [class.active]="activeRoute === '/paquetes'">
+                <span>Diagramas de Paquetes</span>
+              </li>
+              <li [routerLink]="'/componentes'" [class.active]="activeRoute === '/componentes'">
+                <span>Diagramas de Componentes</span>
+              </li>
+              <li [routerLink]="'/clases'" [class.active]="activeRoute === '/clases'">
+                <span>Diagramas de Clases</span>
+              </li>
+            </ul>
+          </section>
+        }@else{
+          <div class="welcome-screen">
+            <div class="welcome-icon">
+            </div>
+            <h2>Herramienta de Modelado UML</h2>
+            <button class="welcome-btn" (click)="activarInput()">
+              Crear Nuevo Proyecto
+            </button>
+          </div>
+        }
+        
+        @if(showComponent){
+          <div class="diagram-container">
+            <router-outlet></router-outlet>
+          </div>
+        }
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Modal para generar código -->
+<div class="modal-backdrop" *ngIf="mostrarModal" (click)="cerrarModal($event)"></div>
+<div class="modal" *ngIf="mostrarModal">
+  <div class="modal-header">
+    <h2>
+      {{ etapaModal === 1 ? 'Seleccionar Versiones' : 'Configurar Conexión' }}
+    </h2>
+    <button class="close-btn" (click)="cerrarModalDirecto()">
+    </button>
+  </div>
+  
+  <!-- Etapa 1: Selección de versiones -->
+  <div class="modal-body" *ngIf="etapaModal === 1">
+    <p>Selecciona la versión de cada diagrama que deseas utilizar para generar el código:</p>
+    
+    <div class="diagrama-selector">
+      <div class="diagrama-item" *ngFor="let diagrama of tiposDiagrama">
+        <h3>{{ diagrama.nombre }}</h3>
+        <div class="select-container">
+          <select [(ngModel)]="diagramasSeleccionados[diagrama.tipo]" [disabled]="!tieneVersiones(diagrama.tipo)">
+            <option [value]="null" disabled selected>Seleccionar versión</option>
+            <option *ngFor="let version of obtenerVersionesPorTipo(diagrama.tipo); let i = index" 
+                    [value]="version.ID_V">Versión {{ i + 1 }}</option>
+          </select>
+          <span class="version-status" [class.error]="!tieneVersiones(diagrama.tipo)">
+            {{ tieneVersiones(diagrama.tipo) ? 'Disponible' : 'No disponible' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Etapa 2: Configuración de conexión -->
+  <div class="modal-body" *ngIf="etapaModal === 2">
+    <div class="credenciales-section">
+      <!-- Título de sección -->
+      <h3 class="section-title">
+        Configuraciones de conexión
+      </h3>
+      
+      <!-- Vista de selección de credenciales (solo visible cuando no se está editando) -->
+      <div *ngIf="!mostrarFormCredenciales">
+        <!-- Lista de credenciales disponibles -->
+        <div class="credenciales-list" *ngIf="credencialesDisponibles.length > 0">
+          <div class="credencial-item" 
+               *ngFor="let credencial of credencialesDisponibles"
+               [class.selected]="credencial.ID === credencialSeleccionada?.ID"
+               (click)="seleccionarCredencial(credencial)">
+            <div class="credencial-info">
+              <span class="credencial-name">{{credencial.NombreDB}}</span>
+              <span class="credencial-details">{{credencial.Usuario}} &#64; {{credencial.Host}}</span>
+            </div>
+            <div class="credencial-actions">
+              <button class="action-btn edit-btn" title="Editar configuración" (click)="editarCredencial(credencial); $event.stopPropagation()">
+                </button>
+              <button class="action-btn delete-btn" title="Eliminar configuración" (click)="eliminarCredenciales(credencial.ID || 0); $event.stopPropagation()">
+                </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mensaje cuando no hay credenciales -->
+        <div class="no-credenciales" *ngIf="credencialesDisponibles.length === 0">
+          <p>No hay configuraciones guardadas. Agrega una nueva configuración para continuar.</p>
+        </div>
+
+        <!-- Botón para agregar nuevas credenciales -->
+        <button class="add-credencial-btn" (click)="mostrarNuevasCredenciales()">
+          Agregar nueva configuración
+        </button>
+      </div>
+
+      <!-- Formulario para configurar nueva conexión (solo se muestra al agregar/editar) -->
+      <div class="conexion-form" *ngIf="mostrarFormCredenciales">
+        <div class="form-header">
+          <h4>{{ credencialSeleccionada?.ID ? 'Editar' : 'Nueva' }} configuración</h4>
+          <button class="form-close" (click)="cancelarEdicion()">
+          </button>
+        </div>
+        
+        <div class="conexion-config">
+          <div class="form-group">
+            <label for="dbHost">Host de la Base de datos:</label>
+            <input type="text" id="dbHost" [(ngModel)]="configConexion.host" placeholder="Ej: localhost" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="dbUser">Usuario de la Base de datos:</label>
+            <input type="text" id="dbUser" [(ngModel)]="configConexion.usuario" placeholder="Ej: root" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="dbPassword">Contraseña:</label>
+            <input type="password" id="dbPassword" [(ngModel)]="configConexion.password" placeholder="Contraseña">
+          </div>
+          
+          <div class="form-group">
+            <label for="dbName">Nombre de la Base de datos:</label>
+            <input type="text" id="dbName" [(ngModel)]="configConexion.nombreDB" placeholder="Ej: miproyecto_db" required>
+          </div>
+          
+          <!-- Puerto del Backend sigue visible -->
+          <div class="form-group">
+            <label for="backendPort">Puerto del Backend:</label>
+            <input type="number" id="backendPort" [(ngModel)]="configConexion.puertoBackend" placeholder="Ej: 3000" required>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-secondary" (click)="cancelarEdicion()">
+              Cancelar
+            </button>
+            <button class="btn-primary" (click)="guardarCredenciales()" [disabled]="!formularioConexionValido()">
+              Guardar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal-footer">
+    <button class="cancel-btn" (click)="cerrarModal($event)">
+      Cancelar
+    </button>
+    
+    <!-- Botones para la primera etapa -->
+    <button *ngIf="etapaModal === 1" class="next-btn" 
+            [disabled]="!puedeGenerarCodigo()" 
+            (click)="siguienteEtapa()">
+      Siguiente
+    </button>
+    
+    <!-- Botones para la segunda etapa -->
+    <button *ngIf="etapaModal === 2" class="back-btn" (click)="etapaAnterior()">
+      Anterior
+    </button>
+    <button *ngIf="etapaModal === 2" class="generate-btn" 
+            [disabled]="!credencialSeleccionada || mostrarFormCredenciales" 
+            (click)="generarCodigo()">
+      Generar
+    </button>
+  </div>
+</div>
+
+<!-- Spinner de carga -->
+<app-spinner></app-spinner>

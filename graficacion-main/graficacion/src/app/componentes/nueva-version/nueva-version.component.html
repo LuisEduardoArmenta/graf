@@ -1,0 +1,32 @@
+<div class="bg-gray-200 p-6 rounded">
+  <h2 mat-dialog-title class="text-xl font-semibold text-black">Crear Nueva Versión</h2>
+
+  <mat-dialog-content>
+    <form class="max-w-md mx-auto space-y-4" [formGroup]="nuevaVersion">
+      <mat-form-field appearance="outline" class="w-full">
+        <label for="Version">Version</label>
+         <mat-label class="text-black">Version</mat-label>
+        <input matInput type="text" formControlName="version" class="bg-gray-100" />
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="px-4 pb-4">
+    <button
+      mat-button
+      class="hover:bg-gray-300 transition-colors duration-200 rounded px-4 py-2"
+      (click)="onCancel()"
+    >
+      Cancelar
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      class="hover:bg-blue-600 hover:text-white transition-colors duration-200 rounded px-4 py-2"
+      (click)="onSubmit()"
+      [disabled]="nuevaVersion.invalid"
+    >
+      Crear
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,40 @@
+<app-navbar></app-navbar>
+<br>
+<br>
+<br>
+<br>
+<div class="container">
+  <div #myPaletteDiv class="palette-container"></div>
+    <div class="diagram-wrapper">
+      <div #myDiagramDiv class="diagram-container"></div>
+      <div class="controls">
+        <input #levelSlider type="range" min="0" max="5" value="0">
+        <textarea id="mySavedModel" style="display: none;"></textarea>
+        <div class="buttons"
+          >
+          <button (click)="volver()">Volver</button>
+          <button (click)="setLinkType('import')">Modo Import</button>
+          <button (click)="setLinkType('access')">Modo Access</button>
+          <button (click)="setLinkType('dashed')">Modo Línea Punteada</button>
+          <button (click)="deleteSelection()">Eliminar Seleccionado</button>
+          <button (click)="save()">Guardar en Version Actual</button>
+          <button (click)="guardarNuevaVersion()">Guardar Nueva Version</button>
+          <button (click)="load()">Cargar</button>
+          <button (click)="toggleRelationshipMode()">
+            {{ relationshipMode ? 'Salir Modo Relación' : 'Modo Relación' }}
+          </button>
+          <select name="versiones" id="versiones" (change)="cargarVersion($event)">
+            @if (versiones && versiones.length > 0){
+                @for(version of versiones; track $index){
+                    <option value={{version.id_version}}  [selected]="version.id_version == versiones[0]?.id_version">{{ version.version }}</option>
+                }
+            }
+        </select>
+      </div>
+    </div>
+    <!-- <div class="bottom-left-exit">
+      <button (click)="volver()">Salir</button>
+    </div> -->
+  </div>
+</div>
+  

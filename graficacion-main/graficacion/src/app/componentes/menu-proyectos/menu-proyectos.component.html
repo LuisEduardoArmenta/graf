@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Proyectos</title>
+    <link rel="stylesheet" href="menu-proyectos.component.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main-content">
+        <div class="text-container">
+            <h1 class="titulo text-3xl font-bold text-gray-900 dark:text-black mb-4">Mis Proyectos</h1>
+            <button 
+                class="btn px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" 
+                (click)="OpenModal()">
+                Crear Nuevo Proyecto
+            </button>
+            <br>
+            <h1 class="titulo text-2xl font-semibold text-gray-900 dark:text-black mt-6">Creación de diagramas UML</h1>
+            <p class="parrafo text-gray-600 dark:text-gray-300 mb-6">Seleccione un artefacto para comenzar a construir</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+            <!-- Lista de proyectos con paginación -->
+            @if (proyectos && proyectos.length > 0) {
+                @for (proyecto of proyectosPaginados(); track $index) {
+                    <a
+                        class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 transition">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{proyecto.nombre}}</h5>
+                        <p class="font-normal ml-6 text-gray-700 dark:text-gray-400">{{proyecto.descripcion}}</p>
+                        <button class="btn ml-6 mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" (click)="Ingresar(proyecto.id_proyecto, proyecto.nombre)">
+                Ingresar
+            </button>
+                    </a>
+                }
+            } @else {
+                <p class="text-gray-500 dark:text-gray-400">No hay proyectos disponibles.</p>
+            }
+            </div>
+
+            <!-- Paginación dinámica -->
+            @if (proyectos && totalPages > 1) {
+                <div class="flex justify-center mt-6 space-x-2">
+                    <!-- Botón Previous -->
+                    <button 
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50 transition" 
+                        [disabled]="paginaActual === 1" 
+                        (click)="cambiarPagina(paginaActual - 1)">
+                        Previous
+                    </button>
+
+                    <!-- Números de página -->
+                    @for (pagina of generarPaginas(); track $index) {
+                        <button 
+                            class="px-4 py-2 rounded transition" 
+                            [ngClass]="{'bg-blue-500 border-gray-700 text-white': paginaActual === pagina, 'bg-gray-200 text-gray-700 hover:bg-gray-300': paginaActual !== pagina}" 
+                            (click)="cambiarPagina(pagina)">
+                            {{pagina}}
+                        </button>
+                    }
+
+                    <!-- Botón Next -->
+                    <button 
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50 transition" 
+                        [disabled]="paginaActual === totalPages" 
+                        (click)="cambiarPagina(paginaActual + 1)">
+                        Next
+                    </button>
+                </div>
+            }
+        </div>
+        <div class="button-container">
+        </div>
+    </div>
+</body>
+</html>

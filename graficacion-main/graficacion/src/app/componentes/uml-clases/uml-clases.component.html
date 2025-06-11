@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama de Clases UML</title>
+    <link rel="stylesheet" href="./uml-clases.component.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <app-navbar></app-navbar>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <h1>Diagrama de Clases UML</h1>
+    <div class="diagram-container">
+        <div id="myPaletteDiv"></div>
+        <div id="myDiagramDiv"></div>
+    </div>
+    <div class="button-container">
+        <button (click)="volver()">Volver</button>
+        <label for="relacionesSelect" id="txtRelaciones">Relaciones:</label>
+        <select id="relacionesSelect" (change)="ejecutarRelacion($event)">
+          <option value="">Elija una relacion</option>
+          <option value="cerouno">0 : 1</option>
+          <option value="ceromuchos">0 : *</option>
+          <option value="unouno">1 : 1</option>
+          <option value="unomuchos">1 : *</option>
+          <option value="mn">m : n</option>
+          <option value="agregacion">Agregación</option>
+          <option value="composicion">Composición</option>
+          <option value="implementacion">Implementación</option>
+          <option value="herencia">Herencia</option>
+        </select>
+
+        <!-- Botones que se quedan visibles -->
+        <button (click)="guardarDiagrama()">Guardar Diagrama</button>
+        <button (click)="guardarNuevaVersion()">Guardar Nueva Version</button>
+        <button (click)="cargarDiagrama()">Cargar Diagrama</button>
+        <button (click)="eliminarElemento()">Eliminar Elemento</button>
+        <button (click)="guardarComoImagen()">Guardar PDF</button>
+
+        <select name="versiones" id="versiones" (change)="cargarVersion($event)">
+            @if (versiones && versiones.length > 0){
+                @for(version of versiones; track $index){
+                    <option value={{version.id_version}}  [selected]="version.id_version == versiones[0]?.id_version">{{ version.version }}</option>
+                }
+            }
+        </select>
+    </div>
+</body>
+</html>

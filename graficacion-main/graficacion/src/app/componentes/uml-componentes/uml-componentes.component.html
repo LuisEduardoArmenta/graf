@@ -1,0 +1,26 @@
+
+    <app-navbar></app-navbar>
+    <h1>Diagrama de componentes</h1>
+    <div class="diagram-container">
+        <div id="myPaletteDiv"></div>
+        <div id="myDiagramDiv"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/gojs@3.0.19/release/go.js"></script>
+    <!-- Buttons Below -->
+    <div class="button-container">
+        <button (click)="volver()">Volver</button>
+        <button (click)="conectar()">Conectar</button>
+        <button (click)="guardarDiagrama()">Guardar diagrama</button>
+        <button (click)="guardarNuevaVersion()">Guardar Nueva Version</button>
+        <button (click)="cargarDiagrama()">Cargar diagrama</button>
+        <button (click)="eliminarElemento()">Eliminar elemento</button>
+        <button (click)="guardarComoImagen(diagram)">Guardar PDF</button>
+        <select name="versiones" id="versiones" (change)="cargarVersion($event)">
+            @if (versiones && versiones.length > 0){
+                @for(version of versiones; track $index){
+                    <option value={{version.id_version}}  [selected]="version.id_version == versiones[0]?.id_version">{{ version.version }}</option>
+                }
+            }
+        </select>
+        
+    </div>

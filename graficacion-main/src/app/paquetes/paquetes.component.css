@@ -1,0 +1,75 @@
+/* === Estilos para Diagrama de Paquetes === */
+
+/* Contenedor principal: se usa flex para organizar el sidebar y el área del diagrama */
+.uml-container {
+  display: flex;
+  height: 80vh;
+  gap: 20px;  
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Panel lateral: paleta */
+.uml-palette-container {
+  margin-top: 5px;
+  height: 75vh;
+  background: #ffffff;
+  border-radius: 12px;
+  border-right: 1px solid #ddd;
+  /* box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);  Sombra para profundidad */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Área de la paleta: permite scroll si hay muchos elementos */
+.uml-palette {
+  flex: 1;
+  /* padding: 15px; */
+  overflow-y: auto;  /* Permite scroll */
+}
+
+/* Toolbar: área inferior del sidebar con fondo sutil */
+.toolbar {
+  padding: 15px;
+  border-top: 1px solid #ddd;
+  text-align: center;
+}
+
+/* Estilo de los botones en la toolbar */
+.toolbar button {
+  background-color: #f97316; /* Actualizado al color primario naranja */
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;  /* Bordes redondeados */
+  cursor: default; /* Cambiado de pointer a default */
+  font-size: 14px;
+  transition: none;  /* Eliminada la transición */
+}
+
+/* Contenedor del diagrama principal: ocupa el espacio restante */
+.uml-diagram-container {
+  flex: 1;
+  position: relative;
+  padding: 15px;
+  border-radius: 12px;  /* Bordes redondeados */
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  Sombra más pronunciada */
+}
+
+/* Área del diagrama: con borde sutil y fondo blanco */
+.uml-diagram {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  bottom: 15px;
+  left: 15px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  border-radius: 12px;  /* Bordes redondeados */
+  /* box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);  Sombra interior más suave */
+}
+.delete{
+  background-color: #F44336 !important;
+}
+.guardar{
+  background-color: #4CAF50 !important; 
+}

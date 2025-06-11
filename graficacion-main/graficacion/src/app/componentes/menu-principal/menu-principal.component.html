@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artefactos UML</title>
+    <link rel="stylesheet" href="menu-principal.component.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <app-navbar></app-navbar>
+
+    <div class="main-content">
+        
+        <div class="text-container">
+         
+            <h1 class="titulo">Creacion de diagramas UML</h1>
+            <p class="parrafo">Seleccione un artefacto para comenzar a construir</p>
+        </div>
+        <div class="button-container">
+            
+            <button class="btn"(click)="volver()"><span>Volver</span></button>
+            <button class="btn"(click)="iraClases()"><span>D. Clases</span></button>
+            <button class="btn" (click)="iraSecuencias()"><span>D. Secuencia</span></button>
+            <button class="btn" (click)="iraComponentes()"><span>D. Componentes</span></button>
+            <button class="btn" (click)="iraPaquetes()"><span>D. Paquetes</span></button>
+            <button class="btn" (click)="iraCU()"><span>D. Casos de uso</span></button>
+        </div>
+    </div>
+    <div class="main-content">
+        <h2>Crear proyecto</h2>
+        <button class="btn" (click)="crearProyecto()">crear</button>
+    </div>
+</body>
+
+</html>
